@@ -5,7 +5,10 @@ const {
   getSingleArticle,
   getArticles,
 } = require("./controllers/articles.controllers");
-const { getCommentsByArticle } = require("./controllers/comments.controllers");
+const {
+  getCommentsByArticle,
+  postCommentByArticle,
+} = require("./controllers/comments.controllers");
 const {
   handleCustomErrors,
   handlePsqlErrors,
@@ -20,6 +23,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getSingleArticle);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
+app.post("/api/articles/:article_id/comments", postCommentByArticle);
 app.all("/*", badPath);
 
 // Error Handling
