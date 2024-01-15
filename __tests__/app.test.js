@@ -23,8 +23,8 @@ describe("/api", () => {
         .expect(200)
         .then(({ body }) => {
           const { endpoints } = body;
-          const endpointData = require("../endpoints.json")
-          expect(endpoints).toEqual(endpointData)
+          const endpointData = require("../endpoints.json");
+          expect(endpoints).toEqual(endpointData);
         });
     });
   });
@@ -35,9 +35,9 @@ describe("/api", () => {
           .get("/api/topics")
           .expect(200)
           .then(({ body }) => {
-            const { topics } = body
+            const { topics } = body;
             expect(Array.isArray(topics)).toBe(true);
-            expect(topics.length).not.toBe(0)
+            expect(topics.length).not.toBe(0);
             topics.forEach((topic) => {
               expect("slug" in topic).toBe(true);
               expect("description" in topic).toBe(true);
@@ -46,41 +46,68 @@ describe("/api", () => {
       });
     });
   });
-  describe("/articles/:article_id", () => {
+
+  describe("/articles", () => {
     describe("GET", () => {
-      test("200: sends an object of the article with the given id", () => {
+      test("200: sends an array of article objects with the correct properties, sorted by date in descending order", () => {
         return request(app)
-          .get("/api/articles/5")
+          .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
-            expect(body.article).toEqual({
-              article_id: 5,
-              title: "UNCOVERED: catspiracy to bring down democracy",
-              topic: "cats",
-              author: "rogersop",
-              body: "Bastet walks amongst us, and the cats are taking arms!",
-              created_at: "2020-08-03T13:14:00.000Z",
-              votes: 0,
-              article_img_url:
-                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            const { articles } = body;
+            expect(Array.isArray(articles)).toBe(true);
+            expect(articles.length).not.toBe(0);
+            expect(articles).toBeSortedBy("created_at", { descending: true });
+            articles.forEach((article) => {
+              expect("body" in article).toBe(false);
+              expect(typeof article.article_id).toBe("number");
+              expect(typeof article.author).toBe("string");
+              expect(typeof article.title).toBe("string");
+              expect(typeof article.topic).toBe("string");
+              expect(typeof article.created_at).toBe("string");
+              expect(typeof article.votes).toBe("number");
+              expect(typeof article.article_img_url).toBe("string");
+              expect(typeof article.comment_count).toBe("number");
             });
           });
       });
-      test("400: sends an appropriate error if id is invalid (i.e. a string)", () => {
-        return request(app)
-          .get("/api/articles/hello")
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("Bad Request");
-          });
-      });
-      test("404: sends an appropriate error if id is valid but doesn't exist", () => {
-        return request(app)
-          .get("/api/articles/744859587")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe("Article not found");
-          });
+    });
+    describe("/:article_id", () => {
+      describe("GET", () => {
+        test("200: sends an object of the article with the given id", () => {
+          return request(app)
+            .get("/api/articles/5")
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.article).toEqual({
+                article_id: 5,
+                title: "UNCOVERED: catspiracy to bring down democracy",
+                topic: "cats",
+                author: "rogersop",
+                body: "Bastet walks amongst us, and the cats are taking arms!",
+                created_at: "2020-08-03T13:14:00.000Z",
+                votes: 0,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
+        test("400: sends an appropriate error if id is invalid (i.e. a string)", () => {
+          return request(app)
+            .get("/api/articles/hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+          return request(app)
+            .get("/api/articles/744859587")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Article not found");
+            });
+        });
       });
     });
   });
