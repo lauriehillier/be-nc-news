@@ -8,12 +8,12 @@ afterAll(() => db.end());
 beforeEach(() => seed(data));
 
 describe("/api", () => {
-  test("400: sends an appropriate error message if given an invalid path", () => {
+  test("404: sends an appropriate error message if given an invalid path", () => {
     return request(app)
       .get("/api/toopics")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid Path");
+        expect(body.msg).toBe("Path not found");
       });
   });
   describe("GET", () => {
@@ -42,8 +42,10 @@ describe("/api", () => {
           .get("/api/topics")
           .expect(200)
           .then(({ body }) => {
-            expect(Array.isArray(body.topics)).toBe(true);
-            body.topics.forEach((topic) => {
+            const { topics } = body
+            expect(Array.isArray(topics)).toBe(true);
+            expect(topics.length).not.toBe(0)
+            topics.forEach((topic) => {
               expect("slug" in topic).toBe(true);
               expect("description" in topic).toBe(true);
             });

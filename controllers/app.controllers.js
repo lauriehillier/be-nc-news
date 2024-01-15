@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 
 exports.badPath = (req, res) => {
-  res.status(400).send({ msg: "Invalid Path" });
+  res.status(404).send({ msg: "Path not found" });
 };
 
 exports.getEndpoints = async (req, res) => {
