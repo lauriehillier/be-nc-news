@@ -1,15 +1,15 @@
-const fs = require("fs/promises");
+const { readEndpoints } = require("../models/app.models");
+
 
 exports.badPath = (req, res) => {
   res.status(404).send({ msg: "Path not found" });
 };
 
-exports.getEndpoints = async (req, res) => {
+exports.getEndpoints = async (req, res, next) => {
   try {
-    const data = await fs.readFile(`${__dirname}/../endpoints.json`, "utf-8");
-    const endpoints = JSON.parse(data);
+    const endpoints = await readEndpoints()
     res.status(200).send({ endpoints });
   } catch (err) {
-    nextTick(err);
+    next(err);
   }
 };
