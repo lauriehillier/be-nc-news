@@ -5,6 +5,7 @@ const {
   getSingleArticle,
   getArticles,
 } = require("./controllers/articles.controllers");
+const { getCommentsByArticle } = require("./controllers/comments.controllers");
 const app = express();
 app.use(express.json());
 
@@ -13,6 +14,7 @@ app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getSingleArticle);
+app.get("/api/articles/:article_id/comments", getCommentsByArticle)
 app.all("/*", badPath);
 
 // Error Handling

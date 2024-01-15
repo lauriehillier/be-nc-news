@@ -109,6 +109,32 @@ describe("/api", () => {
             });
         });
       });
+      describe("/comments", () => {
+        test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {
+          return request(app)
+            .get("/api/articles/1/comments")
+            .expect(200)
+            .then(({ body }) => {
+              const { comments } = body;
+              console.log(comments)
+              expect(Array.isArray(comments)).toBe(true);
+              expect(comments.length).not.toBe(0);
+              expect(comments).toBeSortedBy("created_at");
+              comments.forEach((comment) => {
+                expect(typeof comment.comment_id).toBe("number");
+                expect(typeof comment.author).toBe("string");
+                expect(typeof comment.body).toBe("string");
+                expect(typeof comment.created_at).toBe("string");
+                expect(typeof comment.votes).toBe("number");
+                expect(typeof comment.article_id).toBe("number");
+                expect(comment.article_id).toBe(1)
+              });
+            });
+        });
+        // 404 article doesn't exist --- this does not error, just returns empty - will need own select
+        // 400 bad article id
+        // 404 no comments found for that article
+      });
     });
   });
 });
