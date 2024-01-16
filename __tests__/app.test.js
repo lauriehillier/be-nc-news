@@ -155,7 +155,7 @@ describe("/api", () => {
       describe("PATCH", () => {
         test("200: sends an object of the updated article if given positive vote number", () => {
           return request(app)
-            .patch("/api/articles/5/")
+            .patch("/api/articles/5")
             .send({ inc_votes: 1 })
             .expect(200)
             .then(({ body }) => {
@@ -175,7 +175,7 @@ describe("/api", () => {
         });
         test("200: sends an object of the updated article if given positive vote number", () => {
           return request(app)
-            .patch("/api/articles/5/")
+            .patch("/api/articles/5")
             .send({ inc_votes: -20 })
             .expect(200)
             .then(({ body }) => {
@@ -185,7 +185,7 @@ describe("/api", () => {
         });
         test("400: sends an appropriate error if id is invalid", () => {
           return request(app)
-            .patch("/api/articles/hello/")
+            .patch("/api/articles/hello")
             .send({ inc_votes: -20 })
             .expect(400)
             .then(({ body }) => {
@@ -203,13 +203,22 @@ describe("/api", () => {
         });
         test("400: sends an appropriate error if given vote is invalid (e.g. not a number)", () => {
           return request(app)
-            .patch("/api/articles/5/")
+            .patch("/api/articles/5")
             .send({ inc_votes: "hello" })
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toBe("Bad Request");
             });
         });
+        test("400: sends an appropriate error if vote is missing", () => {
+            return request(app)
+              .patch("/api/articles/5")
+              .send({ another: "hello" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
       });
 
       describe("/comments", () => {
