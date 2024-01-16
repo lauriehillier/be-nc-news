@@ -109,6 +109,65 @@ describe("/api", () => {
             });
         });
       });
+      describe("PATCH", () => {
+        test("200: sends an object of the updated article if given positive vote number", () => {
+          return request(app)
+            .patch("/api/articles/5/")
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+              const { article } = body;
+              expect(article).toEqual({
+                article_id: 5,
+                title: "UNCOVERED: catspiracy to bring down democracy",
+                topic: "cats",
+                author: "rogersop",
+                body: "Bastet walks amongst us, and the cats are taking arms!",
+                created_at: "2020-08-03T13:14:00.000Z",
+                votes: 1,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
+        test("200: sends an object of the updated article if given positive vote number", () => {
+          return request(app)
+            .patch("/api/articles/5/")
+            .send({ inc_votes: -20 })
+            .expect(200)
+            .then(({ body }) => {
+              const { article } = body;
+              expect(article.votes).toBe(-20);
+            });
+        });
+        test("400: sends an appropriate error if id is invalid", () => {
+          return request(app)
+            .patch("/api/articles/hello/")
+            .send({ inc_votes: -20 })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+          return request(app)
+            .patch("/api/articles/744859587")
+            .send({ inc_votes: -20 })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Article not found");
+            });
+        });
+        test("400: sends an appropriate error if given vote is invalid (e.g. not a number)", () => {
+            return request(app)
+              .patch("/api/articles/5/")
+              .send({ inc_votes: "hello" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
+      });
 
       describe("/comments", () => {
         describe("GET", () => {
@@ -205,7 +264,10 @@ describe("/api", () => {
           test("404: sends an appropriate error if user does not exist", () => {
             return request(app)
               .post("/api/articles/5/comments")
-              .send({ username: "butter_bridge_3838383", body: "this is a comment!" })
+              .send({
+                username: "butter_bridge_3838383",
+                body: "this is a comment!",
+              })
               .expect(404)
               .then(({ body }) => {
                 expect(body.msg).toBe("User not found");
