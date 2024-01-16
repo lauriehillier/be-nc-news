@@ -109,6 +109,56 @@ describe("/api", () => {
             });
         });
       });
+      describe("GET", () => {
+        describe("/comments", () => {
+          test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body }) => {
+                const { comments } = body;
+                expect(Array.isArray(comments)).toBe(true);
+                expect(comments.length).not.toBe(0);
+                expect(comments).toBeSortedBy("created_at");
+                comments.forEach((comment) => {
+                  expect(typeof comment.comment_id).toBe("number");
+                  expect(typeof comment.author).toBe("string");
+                  expect(typeof comment.body).toBe("string");
+                  expect(typeof comment.created_at).toBe("string");
+                  expect(typeof comment.votes).toBe("number");
+                  expect(typeof comment.article_id).toBe("number");
+                  expect(comment.article_id).toBe(1);
+                });
+              });
+          });
+          test("200: sends an empty array if article id exists, but the article has no comments", () => {
+            return request(app)
+              .get("/api/articles/hello/comments")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
+          test("400: sends an appropriate error if id is invalid (i.e. a string)", () => {
+            return request(app)
+              .get("/api/articles/2/comments")
+              .expect(200)
+              .then(({ body }) => {
+                const { comments } = body;
+                expect(Array.isArray(comments)).toBe(true);
+                expect(comments.length).toBe(0);
+              });
+          });
+          test("404: sends an appropriate error if article id is valid but doesn't exist", () => {
+            return request(app)
+              .get("/api/articles/744859587/comments")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Article not found");
+              });
+          });
+        });
+      });
     });
   });
 });
