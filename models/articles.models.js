@@ -3,7 +3,12 @@ const { checkExists } = require("../utils/check-exists");
 
 exports.selectSingleArticle = async (article_id) => {
   const { rows } = await db.query(
-    "SELECT * FROM articles WHERE article_id = $1",
+    `SELECT articles.*, 
+    COUNT(comment_id)::INT AS comment_count
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id`,
     [article_id]
   );
   return !rows.length
@@ -31,7 +36,7 @@ exports.selectArticles = async (topic) => {
   }
   queryStr += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
   const { rows } = await db.query(queryStr, queryValues);
-  return rows
+  return rows;
 };
 
 exports.updateSingleArticle = async (inc_votes, article_id) => {

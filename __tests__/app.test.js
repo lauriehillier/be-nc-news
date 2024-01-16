@@ -92,15 +92,15 @@ describe("/api", () => {
             });
         });
         test("200: sends an empty array if topic exists but no articles are linked to it", () => {
-            return request(app)
-              .get("/api/articles?topic=paper")
-              .expect(200)
-              .then(({ body }) => {
-                const { articles } = body;
-                expect(Array.isArray(articles)).toBe(true);
-                expect(articles.length).toBe(0);
-              });
-          });
+          return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(Array.isArray(articles)).toBe(true);
+              expect(articles.length).toBe(0);
+            });
+        });
       });
     });
     describe("/:article_id", () => {
@@ -110,7 +110,8 @@ describe("/api", () => {
             .get("/api/articles/5")
             .expect(200)
             .then(({ body }) => {
-              expect(body.article).toEqual({
+              const { article } = body;
+              expect(article).toMatchObject({
                 article_id: 5,
                 title: "UNCOVERED: catspiracy to bring down democracy",
                 topic: "cats",
@@ -120,6 +121,17 @@ describe("/api", () => {
                 votes: 0,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
+        test("200: sends an object of the article with the given id, now with comment count", () => {
+          return request(app)
+            .get("/api/articles/5")
+            .expect(200)
+            .then(({ body }) => {
+              const { article } = body;
+              expect(article).toMatchObject({
+                comment_count: 2,
               });
             });
         });
