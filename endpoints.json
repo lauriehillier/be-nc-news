@@ -42,7 +42,7 @@
   "PATCH /api/articles/:article_id": {
     "description": "updates a given article by the given number of votes and serves an object of the updated article",
     "queries": [],
-    "exampleRequest": { "inc_votes" : 1 },
+    "exampleRequest": { "inc_votes": 1 },
     "exampleResponse": {
       "topics": [
         {
@@ -96,7 +96,10 @@
   "POST /api/articles/:article_id/comments": {
     "description": "adds a comment to the database and serves the posted comment",
     "queries": [],
-    "exampleRequest": {"username": "butter_bridge", "body": "this is a comment!"},
+    "exampleRequest": {
+      "username": "butter_bridge",
+      "body": "this is a comment!"
+    },
     "exampleResponse": {
       "comments": [
         {
@@ -115,5 +118,19 @@
     "queries": [],
     "exampleRequest": {},
     "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        }
+      ]
+    }
   }
 }

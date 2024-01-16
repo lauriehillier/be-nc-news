@@ -304,4 +304,23 @@ describe("/api", () => {
       });
     });
   });
+  describe("/users", () => {
+    describe("GET", () => {
+      test("200: sends an array of user objects with the correct properties", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body }) => {
+            const { users } = body;
+            expect(Array.isArray(users)).toBe(true);
+            expect(users.length).not.toBe(0);
+            users.forEach((user) => {
+              expect(typeof user.username).toBe("string");
+              expect(typeof user.name).toBe("string");
+              expect("avatar_url" in user).toBe(true);
+            });
+          });
+      });
+    });
+  });
 });

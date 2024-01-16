@@ -16,6 +16,7 @@ const {
   handlePsqlErrors,
   handleServerErrors,
 } = require("./errors");
+const { getUsers } = require("./controllers/users.controllers");
 const app = express();
 app.use(express.json());
 
@@ -28,6 +29,7 @@ app.patch("/api/articles/:article_id", patchSingleArticle);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 app.post("/api/articles/:article_id/comments", postCommentByArticle);
 app.delete("/api/comments/:comment_id", deleteCommentById);
+app.get("/api/users", getUsers);
 app.all("/*", badPath);
 
 // Error Handling
