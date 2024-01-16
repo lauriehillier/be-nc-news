@@ -46,7 +46,6 @@ describe("/api", () => {
       });
     });
   });
-
   describe("/articles", () => {
     describe("GET", () => {
       test("200: sends an array of article objects with the correct properties, sorted by date in descending order", () => {
@@ -159,14 +158,14 @@ describe("/api", () => {
             });
         });
         test("400: sends an appropriate error if given vote is invalid (e.g. not a number)", () => {
-            return request(app)
-              .patch("/api/articles/5/")
-              .send({ inc_votes: "hello" })
-              .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).toBe("Bad Request");
-              });
-          });
+          return request(app)
+            .patch("/api/articles/5/")
+            .send({ inc_votes: "hello" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
       });
 
       describe("/comments", () => {
@@ -274,6 +273,34 @@ describe("/api", () => {
               });
           });
         });
+      });
+    });
+  });
+  describe("/comments/:comment_id", () => {
+    describe("DELETE", () => {
+      test("204: returns no content", () => {
+        return request(app)
+          .delete("/api/comments/5")
+          .expect(204)
+          .then(({ body }) => {
+            expect(body).toEqual({});
+          });
+      });
+      test("400: sends an appropriate error if id is invalid", () => {
+        return request(app)
+          .delete("/api/comments/hello/")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request");
+          });
+      });
+      test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+        return request(app)
+          .delete("/api/comments/744859587")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Comment not found");
+          });
       });
     });
   });
