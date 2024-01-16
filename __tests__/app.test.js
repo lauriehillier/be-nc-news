@@ -105,7 +105,7 @@ describe("/api", () => {
     });
     describe("/:article_id", () => {
       describe("GET", () => {
-        test("200: sends an object of the article with the given id, now with comment count", () => {
+        test("200: sends an object of the article with the given id", () => {
           return request(app)
             .get("/api/articles/5")
             .expect(200)
@@ -121,6 +121,17 @@ describe("/api", () => {
                 votes: 0,
                 article_img_url:
                   "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              });
+            });
+        });
+        test("200: sends an object of the article with the given id, now with comment count", () => {
+          return request(app)
+            .get("/api/articles/5")
+            .expect(200)
+            .then(({ body }) => {
+              const { article } = body;
+              expect(article).toMatchObject({
+                comment_count: 2,
               });
             });
         });
