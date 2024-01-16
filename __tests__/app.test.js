@@ -55,7 +55,7 @@ describe("/api", () => {
           .then(({ body }) => {
             const { articles } = body;
             expect(Array.isArray(articles)).toBe(true);
-            expect(articles.length).not.toBe(0);
+            expect(articles.length).toBe(13);
             expect(articles).toBeSortedBy("created_at", { descending: true });
             articles.forEach((article) => {
               expect("body" in article).toBe(false);
@@ -68,6 +68,38 @@ describe("/api", () => {
               expect(typeof article.article_img_url).toBe("string");
               expect(typeof article.comment_count).toBe("number");
             });
+          });
+      });
+      describe("?topic=topic", () => {
+        test("200: sends an array of article objects with the given topic", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(12);
+              articles.forEach((article) => {
+                expect(article.topic).toBe("mitch");
+              });
+            });
+        });
+        test("404: sends an appropriate error if topic doesn't exist", () => {
+          return request(app)
+            .get("/api/articles?topic=hello")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Topic not found");
+            });
+        });
+        test("200: sends an empty array if topic exists but no articles are linked to it", () => {
+            return request(app)
+              .get("/api/articles?topic=paper")
+              .expect(200)
+              .then(({ body }) => {
+                const { articles } = body;
+                expect(Array.isArray(articles)).toBe(true);
+                expect(articles.length).toBe(0);
+              });
           });
       });
     });

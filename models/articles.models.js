@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkExists } = require("../utils/check-exists");
 
 exports.selectSingleArticle = async (article_id) => {
   const { rows } = await db.query(
@@ -10,16 +11,27 @@ exports.selectSingleArticle = async (article_id) => {
     : rows[0];
 };
 
-exports.selectArticles = async () => {
-  const { rows } = await db.query(`
-    SELECT articles.article_id, articles.author, title, topic, articles.created_at, articles.votes, article_img_url,
-    COUNT(comment_id)::INT AS comment_count
-    FROM articles
-    JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC
-    `);
-  return rows;
+exports.selectArticles = async (topic) => {
+  const queryValues = [];
+  let queryStr = `SELECT 
+  articles.article_id, 
+  articles.author, 
+  title, 
+  topic, 
+  articles.created_at, 
+  articles.votes, 
+  article_img_url,
+  COUNT(comment_id)::INT AS comment_count
+  FROM articles
+  LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  if (topic) {
+    await checkExists("topics", "slug", topic, "Topic");
+    queryValues.push(topic);
+    queryStr += " WHERE topic = $1";
+  }
+  queryStr += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
+  const { rows } = await db.query(queryStr, queryValues);
+  return rows
 };
 
 exports.updateSingleArticle = async (inc_votes, article_id) => {
