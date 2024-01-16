@@ -109,8 +109,9 @@ describe("/api", () => {
             });
         });
       });
-      describe("GET", () => {
-        describe("/comments", () => {
+
+      describe("/comments", () => {
+        describe("GET", () => {
           test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {
             return request(app)
               .get("/api/articles/1/comments")
@@ -131,7 +132,7 @@ describe("/api", () => {
                 });
               });
           });
-          test("200: sends an empty array if article id exists, but the article has no comments", () => {
+          test("400: sends an appropriate error if id is invalid (i.e. a string)", () => {
             return request(app)
               .get("/api/articles/hello/comments")
               .expect(400)
@@ -139,7 +140,7 @@ describe("/api", () => {
                 expect(body.msg).toBe("Bad Request");
               });
           });
-          test("400: sends an appropriate error if id is invalid (i.e. a string)", () => {
+          test("200: sends an empty array if article id exists, but the article has no comments", () => {
             return request(app)
               .get("/api/articles/2/comments")
               .expect(200)
@@ -155,6 +156,59 @@ describe("/api", () => {
               .expect(404)
               .then(({ body }) => {
                 expect(body.msg).toBe("Article not found");
+              });
+          });
+        });
+        describe("POST", () => {
+          test("201: sends an object of the posted comment", () => {
+            return request(app)
+              .post("/api/articles/5/comments")
+              .send({ username: "butter_bridge", body: "this is a comment!" })
+              .expect(201)
+              .then(({ body }) => {
+                const { comment } = body;
+                expect(typeof comment.comment_id).toBe("number");
+                expect(comment.author).toBe("butter_bridge");
+                expect(comment.body).toBe("this is a comment!");
+                expect(typeof comment.created_at).toBe("string");
+                expect(comment.votes).toBe(0);
+                expect(comment.article_id).toBe(5);
+              });
+          });
+          test("400: sends an appropriate error if article id is invalid", () => {
+            return request(app)
+              .post("/api/articles/hello/comments")
+              .send({ username: "butter_bridge", body: "this is a comment!" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
+          test("404: sends an appropriate error if article id is valid but doesn't exist", () => {
+            return request(app)
+              .post("/api/articles/744859587/comments")
+              .send({ username: "butter_bridge", body: "this is a comment!" })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Article not found");
+              });
+          });
+          test("400: sends an appropriate error if the comment body is empty", () => {
+            return request(app)
+              .post("/api/articles/5/comments")
+              .send({ username: "butter_bridge", body: "" })
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Empty Comment");
+              });
+          });
+          test("404: sends an appropriate error if user does not exist", () => {
+            return request(app)
+              .post("/api/articles/5/comments")
+              .send({ username: "butter_bridge_3838383", body: "this is a comment!" })
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe("User not found");
               });
           });
         });

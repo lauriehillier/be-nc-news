@@ -1,11 +1,12 @@
 const db = require("../db/connection");
-exports.checkArticleExists = async (article_id) => {
+const format = require("pg-format");
+
+exports.checkExists = async (table, column, value, errorRef) => {
   try {
-    const { rows } = await db.query(
-      "SELECT * FROM articles WHERE article_id = $1",
-      [article_id]
-    );
-    if (!rows.length) return Promise.reject({ status: 404, msg: "Article not found" });
+    const queryStr = format("SELECT * FROM %I WHERE %I = $1", table, column);
+    const { rows } = await db.query(queryStr, [value]);
+    if (!rows.length)
+      return Promise.reject({ status: 404, msg: `${errorRef} not found` });
   } catch (err) {
     return Promise.reject(err);
   }
