@@ -9,6 +9,7 @@ const {
 const {
   getCommentsByArticle,
   postCommentByArticle,
+  deleteCommentById,
 } = require("./controllers/comments.controllers");
 const {
   handleCustomErrors,
@@ -26,6 +27,7 @@ app.get("/api/articles/:article_id", getSingleArticle);
 app.patch("/api/articles/:article_id", patchSingleArticle);
 app.get("/api/articles/:article_id/comments", getCommentsByArticle);
 app.post("/api/articles/:article_id/comments", postCommentByArticle);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 app.all("/*", badPath);
 
 // Error Handling
