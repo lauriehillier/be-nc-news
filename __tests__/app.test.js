@@ -370,7 +370,7 @@ describe("/api", () => {
             users.forEach((user) => {
               expect(typeof user.username).toBe("string");
               expect(typeof user.name).toBe("string");
-              expect("avatar_url" in user).toBe(true);
+              expect(typeof user.avatar_url).toBe("string");
             });
           });
       });
