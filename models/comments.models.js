@@ -33,5 +33,19 @@ exports.removeCommentById = async (comment_id) => {
     "DELETE FROM comments WHERE comment_id = $1 RETURNING *",
     [comment_id]
   );
-  if (!rows.length) return Promise.reject({ status: 404, msg: "Comment not found" })
+  if (!rows.length)
+    return Promise.reject({ status: 404, msg: "Comment not found" });
+};
+
+exports.updateCommentById = async (inc_votes, comment_id) => {
+  const { rows } = await db.query(
+    `UPDATE comments SET 
+      votes = votes + $1 
+      WHERE comment_id = $2
+      RETURNING *`,
+    [inc_votes, comment_id]
+  );
+  return !rows.length
+    ? Promise.reject({ status: 404, msg: "Comment not found" })
+    : rows[0];
 };

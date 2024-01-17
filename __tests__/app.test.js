@@ -213,7 +213,7 @@ describe("/api", () => {
               });
             });
         });
-        test("200: sends an object of the updated article if given positive vote number", () => {
+        test("200: sends an object of the updated article if given negative vote number", () => {
           return request(app)
             .patch("/api/articles/5")
             .send({ inc_votes: -20 })
@@ -393,6 +393,71 @@ describe("/api", () => {
           .expect(404)
           .then(({ body }) => {
             expect(body.msg).toBe("Comment not found");
+          });
+      });
+    });
+    describe("PATCH", () => {
+      test("200: sends an object of the updated comment if given positive vote number", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body }) => {
+            const { comment } = body;
+            expect(comment).toEqual({
+              comment_id: 1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              votes: 17,
+              author: "butter_bridge",
+              article_id: 9,
+              created_at: "2020-04-06T12:17:00.000Z",
+            });
+          });
+      });
+      test("200: sends an object of the updated comment if given negative vote number", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: -10 })
+          .expect(200)
+          .then(({ body }) => {
+            const { comment } = body;
+            expect(comment.votes).toBe(6);
+          });
+      });
+      test("400: sends an appropriate error if id is invalid", () => {
+        return request(app)
+          .patch("/api/comments/hello")
+          .send({ inc_votes: 10 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request");
+          });
+      });
+      test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+        return request(app)
+          .patch("/api/comments/744859587")
+          .send({ inc_votes: 10 })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Comment not found");
+          });
+      });
+      test("400: sends an appropriate error if given vote is invalid (e.g. not a number)", () => {
+        return request(app)
+          .patch("/api/comments/5")
+          .send({ inc_votes: "hello" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request");
+          });
+      });
+      test("400: sends an appropriate error if inc_vote is missing", () => {
+        return request(app)
+          .patch("/api/comments/5")
+          .send({ another: "hello" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request");
           });
       });
     });
