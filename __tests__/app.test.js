@@ -70,6 +70,46 @@ describe("/api", () => {
             });
           });
       });
+      describe("?sort_by", () => {
+        test("200: sends an array of article objects sorted by an optional sort_by query", () => {
+          return request(app)
+            .get("/api/articles?sort_by=comment_count")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles).toBeSortedBy("comment_count", {
+                descending: true,
+              });
+            });
+        });
+        test("400: sends an appropriate error if sort_by query is invalid or not allowed (only created_by, comment_count & votes are allowed)", () => {
+          return request(app)
+            .get("/api/articles?sort_by=hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Invalid sort query");
+            });
+        });
+      });
+      describe("?order", () => {
+        test("200: sends an array of article objects ordered by an optional order_by query (in any case)", () => {
+          return request(app)
+            .get("/api/articles?order=ASC")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles).toBeSortedBy("created_at");
+            });
+        });
+        test("400: sends an appropriate error if order query is invalid (not asc or desc)", () => {
+          return request(app)
+            .get("/api/articles?order=hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Invalid order query");
+            });
+        });
+      });
       describe("?topic=topic", () => {
         test("200: sends an array of article objects with the given topic", () => {
           return request(app)
@@ -211,14 +251,14 @@ describe("/api", () => {
             });
         });
         test("400: sends an appropriate error if vote is missing", () => {
-            return request(app)
-              .patch("/api/articles/5")
-              .send({ another: "hello" })
-              .expect(400)
-              .then(({ body }) => {
-                expect(body.msg).toBe("Bad Request");
-              });
-          });
+          return request(app)
+            .patch("/api/articles/5")
+            .send({ another: "hello" })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
       });
 
       describe("/comments", () => {
