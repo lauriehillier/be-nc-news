@@ -16,7 +16,17 @@ exports.selectSingleArticle = async (article_id) => {
     : rows[0];
 };
 
-exports.selectArticles = async (topic) => {
+exports.selectArticles = async (
+  topic,
+  sort_by = "created_at",
+  order = "DESC"
+) => {
+  if (!["created_at", "votes", "comment_count"].includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid sort query" });
+  }
+  if (!["ASC", "DESC"].includes(order.toUpperCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
   const queryValues = [];
   let queryStr = `SELECT 
   articles.article_id, 
@@ -34,7 +44,7 @@ exports.selectArticles = async (topic) => {
     queryValues.push(topic);
     queryStr += " WHERE topic = $1";
   }
-  queryStr += ` GROUP BY articles.article_id ORDER BY created_at DESC`;
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
   const { rows } = await db.query(queryStr, queryValues);
   return rows;
 };
