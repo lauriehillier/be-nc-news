@@ -120,6 +120,23 @@
     "exampleRequest": {},
     "exampleResponse": {}
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates a given comment by the given number of votes and serves an object of the updated comment",
+    "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 1,
+          "body": "This morning, I showered for nine minutes.",
+          "votes": 16,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "created_at": "2018-05-30T15:59:13.341Z"
+        }
+      ]
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
