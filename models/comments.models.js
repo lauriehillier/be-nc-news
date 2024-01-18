@@ -1,12 +1,14 @@
 const db = require("../db/connection");
 const { checkExists } = require("../utils/check-exists");
 
-exports.selectCommentsByArticle = async (article_id) => {
+exports.selectCommentsByArticle = async (article_id, limit = 10, page = 1) => {
   await checkExists("articles", "article_id", article_id, "Article");
-  const { rows } = await db.query(
-    "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC",
-    [article_id]
-  );
+  const queryValues = [article_id, page * limit - limit, limit];
+  let queryStr = `SELECT * FROM comments 
+  WHERE article_id = $1 
+  ORDER BY created_at ASC
+  OFFSET $2 LIMIT $3`;
+  const { rows } = await db.query(queryStr, queryValues);
   return rows;
 };
 

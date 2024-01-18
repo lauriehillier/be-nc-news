@@ -186,8 +186,6 @@ describe("/api", () => {
               expect(body.msg).toBe("Bad Request");
             });
         });
-
-        // page doesn't exist - or do we just want to return empty?
       });
     });
     describe("POST", () => {
@@ -324,6 +322,51 @@ describe("/api", () => {
             .then(({ body }) => {
               expect(body.msg).toBe("Article not found");
             });
+        });
+        describe("?limit&p", () => {
+          test("200: sends an array of comments with a default limit of 10 and a total count of potential results", () => {
+            return request(app)
+              .get("/api/articles/1/comments")
+              .expect(200)
+              .then(({ body }) => {
+                const { comments } = body;
+                expect(comments.length).toBe(10);
+              });
+          });
+          test("200: sends an array of comments with the given number of comments", () => {
+            return request(app)
+              .get("/api/articles/1/comments?limit=5")
+              .expect(200)
+              .then(({ body }) => {
+                const { comments } = body;
+                expect(comments.length).toBe(5);
+              });
+          });
+          test("200: sends an array of comments starting at the given 'page'", () => {
+            return request(app)
+              .get("/api/articles/1/comments?limit=5&p=2")
+              .expect(200)
+              .then(({ body }) => {
+                const { comments } = body;
+                expect(comments[0].created_at).toBe("2020-04-14T20:19:00.000Z");
+              });
+          });
+          test("400: sends an appropriate error if the limit given is invalid (not a positive number)", () => {
+            return request(app)
+              .get("/api/articles/1/comments?limit=-1")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
+          test("400: sends an appropriate error if the page given is invalid (not a positive number)", () => {
+            return request(app)
+              .get("/api/articles/1/comments?p=hello")
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request");
+              });
+          });
         });
       });
       describe("PATCH", () => {
