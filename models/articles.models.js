@@ -19,7 +19,9 @@ exports.selectSingleArticle = async (article_id) => {
 exports.selectArticles = async (
   topic,
   sort_by = "created_at",
-  order = "DESC"
+  order = "DESC",
+  limit = 10,
+  page = 1
 ) => {
   if (!["created_at", "votes", "comment_count"].includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort query" });
@@ -36,15 +38,25 @@ exports.selectArticles = async (
   articles.created_at, 
   articles.votes, 
   article_img_url,
-  COUNT(comment_id)::INT AS comment_count
+  COUNT(comment_id)::INT AS comment_count,
+  COUNT(*) OVER()::INT AS total_count
   FROM articles
   LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  // WHERE
   if (topic) {
     await checkExists("topics", "slug", topic, "Topic");
     queryValues.push(topic);
     queryStr += " WHERE topic = $1";
   }
+  // ORDER & GROUP BY
   queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  // OFFSET
+  queryValues.push(page * limit - limit);
+  queryStr += ` OFFSET $${queryValues.length}`;
+  // LIMIT
+  queryValues.push(limit);
+  queryStr += ` LIMIT $${queryValues.length}`;
+  // Execute
   const { rows } = await db.query(queryStr, queryValues);
   return rows;
 };

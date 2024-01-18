@@ -48,14 +48,13 @@ describe("/api", () => {
   });
   describe("/articles", () => {
     describe("GET", () => {
-      test("200: sends an array of article objects with the correct properties, sorted by date in descending order", () => {
+      test("200: sends an array of articles objects with the correct properties, sorted by date in descending order", () => {
         return request(app)
           .get("/api/articles")
           .expect(200)
           .then(({ body }) => {
             const { articles } = body;
             expect(Array.isArray(articles)).toBe(true);
-            expect(articles.length).toBe(13);
             expect(articles).toBeSortedBy("created_at", { descending: true });
             articles.forEach((article) => {
               expect("body" in article).toBe(false);
@@ -117,7 +116,6 @@ describe("/api", () => {
             .expect(200)
             .then(({ body }) => {
               const { articles } = body;
-              expect(articles.length).toBe(12);
               articles.forEach((article) => {
                 expect(article.topic).toBe("mitch");
               });
@@ -141,6 +139,55 @@ describe("/api", () => {
               expect(articles.length).toBe(0);
             });
         });
+      });
+      describe("?limit&p", () => {
+        test("200: sends an array of articles with a default limit of 10 and a total count of potential results", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(10);
+              expect(articles[0].total_count).toBe(12);
+            });
+        });
+        test("200: sends an array of articles with the given number of articles", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch&limit=5")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles.length).toBe(5);
+              expect(articles[0].total_count).toBe(12);
+            });
+        });
+        test("200: sends an array of articles starting at the given 'page'", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch&limit=5&p=2")
+            .expect(200)
+            .then(({ body }) => {
+              const { articles } = body;
+              expect(articles[0].created_at).toBe("2020-07-09T20:11:00.000Z");
+            });
+        });
+        test("400: sends an appropriate error if the limit given is invalid (not a positive number)", () => {
+          return request(app)
+            .get("/api/articles?limit=-1")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test("400: sends an appropriate error if the page given is invalid (not a positive number)", () => {
+          return request(app)
+            .get("/api/articles?p=hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+
+        // page doesn't exist - or do we just want to return empty?
       });
     });
     describe("POST", () => {
