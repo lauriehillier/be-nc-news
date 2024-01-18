@@ -61,3 +61,26 @@ exports.updateSingleArticle = async (inc_votes, article_id) => {
     ? Promise.reject({ status: 404, msg: "Article not found" })
     : rows[0];
 };
+
+exports.insertArticle = async (newArticle) => {
+  const { author, title, body, topic, article_img_url } = newArticle;
+  if ([author, title, body, topic].includes(""))
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: Missing Required Fields",
+    });
+  await checkExists("topics", "slug", topic, "Topic");
+  await checkExists("users", "username", author, "User");
+  const { rows } = await db.query(
+    `
+        INSERT INTO articles
+        (author, title, body, topic, article_img_url)
+        VALUES
+        ($1, $2, $3, $4, $5)
+        RETURNING *
+        `,
+    [author, title, body, topic, article_img_url]
+  );
+  rows[0].comment_count = 0;
+  return rows[0];
+};

@@ -143,6 +143,93 @@ describe("/api", () => {
         });
       });
     });
+    describe("POST", () => {
+      test("201: sends an object of the posted article", () => {
+        return request(app)
+          .post("/api/articles/")
+          .send({
+            author: "butter_bridge",
+            title: "this is a title!",
+            body: "this is an article!",
+            topic: "paper",
+            article_img_url: "https://image.images.com",
+          })
+          .expect(201)
+          .then(({ body }) => {
+            const { article } = body;
+            expect(article).toMatchObject({
+              article_id: 14,
+              author: "butter_bridge",
+              title: "this is a title!",
+              body: "this is an article!",
+              topic: "paper",
+              article_img_url: "https://image.images.com",
+              votes: 0,
+              comment_count: 0,
+            });
+            expect(typeof article.created_at).toBe("string");
+          });
+      });
+      test("404: sends an appropriate error if the topic doesn't exist", () => {
+        return request(app)
+          .post("/api/articles/")
+          .send({
+            author: "butter_bridge",
+            title: "this is a title!",
+            body: "this is an article!",
+            topic: "hello",
+            article_img_url: "https://image.images.com",
+          })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Topic not found");
+          });
+      });
+      test("404: sends an appropriate error if the user doesn't exist", () => {
+        return request(app)
+          .post("/api/articles/")
+          .send({
+            author: "hello",
+            title: "this is a title!",
+            body: "this is an article!",
+            topic: "paper",
+            article_img_url: "https://image.images.com",
+          })
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("User not found");
+          });
+      });
+      test("400: sends an appropriate error if and required keys are empty (anything other than article_img_url)", () => {
+        return request(app)
+          .post("/api/articles/")
+          .send({
+            author: "",
+            title: "this is a title!",
+            body: "fgdg",
+            topic: "paper",
+            article_img_url: "https://image.images.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request: Missing Required Fields");
+          });
+      });
+      test("400: sends an appropriate error if any required keys are missing", () => {
+        return request(app)
+          .post("/api/articles/")
+          .send({
+            author: "",
+            title: "this is a title!",
+            topic: "paper",
+            article_img_url: "https://image.images.com",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request: Missing Required Fields");
+          });
+      });
+    });
     describe("/:article_id", () => {
       describe("GET", () => {
         test("200: sends an object of the article with the given id", () => {
@@ -260,7 +347,6 @@ describe("/api", () => {
             });
         });
       });
-
       describe("/comments", () => {
         describe("GET", () => {
           test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {

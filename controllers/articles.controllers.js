@@ -3,6 +3,7 @@ const {
   selectSingleArticle,
   selectArticles,
   updateSingleArticle,
+  insertArticle,
 } = require("../models/articles.models");
 
 exports.getSingleArticle = async (req, res, next) => {
@@ -30,6 +31,16 @@ exports.patchSingleArticle = async (req, res, next) => {
   try {
     const article = await updateSingleArticle(inc_votes, article_id);
     res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postArticle = async (req, res, next) => {
+  const newArticle = req.body
+  try {
+    const article = await insertArticle(newArticle);
+    res.status(201).send({ article });
   } catch (err) {
     next(err);
   }
