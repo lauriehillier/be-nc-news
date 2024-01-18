@@ -16,9 +16,9 @@ exports.getSingleArticle = async (req, res, next) => {
 };
 
 exports.getArticles = async (req, res, next) => {
-  const { topic, sort_by, order } = req.query;
+  const { topic, sort_by, order, limit, p} = req.query;
   try {
-    const articles = await selectArticles(topic, sort_by, order);
+    const articles = await selectArticles(topic, sort_by, order, limit, p);
     res.status(200).send({ articles });
   } catch (err) {
     next(err);
