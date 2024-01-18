@@ -9,7 +9,8 @@ const {
 exports.getCommentsByArticle = async (req, res, next) => {
   try {
     const { article_id } = req.params;
-    const comments = await selectCommentsByArticle(article_id);
+    const { limit, p } = req.query;
+    const comments = await selectCommentsByArticle(article_id, limit, p);
     res.status(200).send({ comments });
   } catch (err) {
     next(err);
