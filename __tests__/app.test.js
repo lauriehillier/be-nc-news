@@ -64,11 +64,11 @@ describe("/api", () => {
       });
       test("409: sends an appropriate error if topic already exists", () => {
         return request(app)
-        .post("/api/topics/")
-        .send({
-          slug: "paper",
-          description: "description here",
-        })
+          .post("/api/topics/")
+          .send({
+            slug: "paper",
+            description: "description here",
+          })
           .expect(409)
           .then(({ body }) => {
             expect(body.msg).toBe("Resource Already Exists");
@@ -475,6 +475,32 @@ describe("/api", () => {
             .expect(400)
             .then(({ body }) => {
               expect(body.msg).toBe("Bad Request");
+            });
+        });
+      });
+      describe("DELETE", () => {
+        test("204: deletes the article and returns no content", () => {
+          return request(app)
+            .delete("/api/articles/5")
+            .expect(204)
+            .then(({ body }) => {
+              expect(body).toEqual({});
+            })
+        });
+        test("400: sends an appropriate error if id is invalid", () => {
+          return request(app)
+            .delete("/api/articles/hello")
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Bad Request");
+            });
+        });
+        test("404: sends an appropriate error if id is valid but doesn't exist", () => {
+          return request(app)
+            .delete("/api/articles/744859587")
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe("Article not found");
             });
         });
       });

@@ -120,6 +120,12 @@
       ]
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes a the article with the given id and its respective comments, serving nothing to the client",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {}
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "serves an array of all comments for an article with the given id",
     "queries": ["limit", "p"],
