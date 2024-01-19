@@ -774,13 +774,13 @@ describe("/api/users", () => {
     });
     test("400: sends an appropriate error if the username is invalid (at least 3 characters, numbers, letters, dash and underscore only)", () => {
       return request(app)
-      .post("/api/users/")
-      .send({
-        username: "new user",
-        name: "johnny",
-        avatar_url:
-          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
-      })
+        .post("/api/users/")
+        .send({
+          username: "new user",
+          name: "johnny",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        })
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Username Invalid");
@@ -810,6 +810,69 @@ describe("/api/users/:username", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("User not found");
+        });
+    });
+  });
+  describe("PATCH", () => {
+    test("200: sends an object of the updated user", () => {
+      return request(app)
+        .patch("/api/users/butter_bridge")
+        .send({
+          name: "roger",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toEqual({
+            username: "butter_bridge",
+            name: "roger",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    test("200: sends an object of the updated user if no avatar_url is given", () => {
+      return request(app)
+        .patch("/api/users/butter_bridge")
+        .send({
+          name: "roger",
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toEqual({
+            username: "butter_bridge",
+            name: "roger",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    test("404: sends an appropriate error if user doesn't exist", () => {
+      return request(app)
+        .patch("/api/users/hello")
+        .send({
+          name: "roger",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("User not found");
+        });
+    });
+    test("400: sends an appropriate error if name is missing", () => {
+      return request(app)
+      .patch("/api/users/butter_bridge")
+      .send({
+        avatar_url:
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Required Fields Missing");
         });
     });
   });
