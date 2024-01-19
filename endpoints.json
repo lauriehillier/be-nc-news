@@ -244,5 +244,11 @@
         "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
       }
     }
+  },
+  "DELETE /api/users/:username": {
+    "description": "deletes a the user with the given id and its respective comments and articles, serving nothing to the client",
+    "queries": [],
+    "exampleRequest": {},
+    "exampleResponse": {}
   }
 }

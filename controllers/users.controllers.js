@@ -2,7 +2,8 @@ const {
   selectUsers,
   selectUserByUsername,
   insertUser,
-  updateUserById,
+  removeUserByUsername,
+  updateUserByUsername,
 } = require("../models/users.models");
 
 exports.getUsers = async (req, res, next) => {
@@ -34,12 +35,22 @@ exports.postUser = async (req, res, next) => {
   }
 };
 
-exports.patchUserById = async (req, res, next) => {
+exports.patchUserByUsername = async (req, res, next) => {
   const updateUserData = req.body;
   const { username } = req.params;
   try {
-    const user = await updateUserById(username, updateUserData);
+    const user = await updateUserByUsername(username, updateUserData);
     res.status(200).send({ user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteUserByUsername = async (req, res, next) => {
+  const { username } = req.params;
+  try {
+    await removeUserByUsername(username);
+    res.sendStatus(204);
   } catch (err) {
     next(err);
   }

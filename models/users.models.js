@@ -25,7 +25,7 @@ exports.insertUser = async (newUser) => {
   return rows[0];
 };
 
-exports.updateUserById = async (username, updateUserData) => {
+exports.updateUserByUsername = async (username, updateUserData) => {
   const { name, avatar_url } = updateUserData;
   const queryValues = [username, name];
   let SqlQuery = "UPDATE users SET name = $2";
@@ -38,4 +38,13 @@ exports.updateUserById = async (username, updateUserData) => {
   return !rows.length
     ? Promise.reject({ status: 404, msg: "User not found" })
     : rows[0];
+};
+
+exports.removeUserByUsername = async (username) => {
+  const { rows } = await db.query(
+    "DELETE FROM users WHERE username = $1 RETURNING *",
+    [username]
+  );
+  if (!rows.length)
+    return Promise.reject({ status: 404, msg: "User not found" });
 };
