@@ -96,3 +96,12 @@ exports.insertArticle = async (newArticle) => {
   rows[0].comment_count = 0;
   return rows[0];
 };
+
+exports.removeArticleById = async (article_id) => {
+  const { rows } = await db.query(
+    "DELETE FROM articles WHERE article_id = $1 RETURNING *",
+    [article_id]
+  );
+  if (!rows.length)
+    return Promise.reject({ status: 404, msg: "Article not found" });
+};

@@ -4,6 +4,7 @@ const {
   selectArticles,
   updateSingleArticle,
   insertArticle,
+  removeArticleById,
 } = require("../models/articles.models");
 
 exports.getSingleArticle = async (req, res, next) => {
@@ -41,6 +42,16 @@ exports.postArticle = async (req, res, next) => {
   try {
     const article = await insertArticle(newArticle);
     res.status(201).send({ article });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteArticleById = async (req, res, next) => {
+  const { article_id } = req.params;
+  try {
+    await removeArticleById(article_id);
+    res.sendStatus(204);
   } catch (err) {
     next(err);
   }
