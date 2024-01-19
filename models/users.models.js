@@ -10,6 +10,17 @@ exports.selectUserByUsername = async (username) => {
     username,
   ]);
   return !rows.length
-  ? Promise.reject({ status: 404, msg: "User not found" })
-  : rows[0];
+    ? Promise.reject({ status: 404, msg: "User not found" })
+    : rows[0];
+};
+
+exports.insertUser = async (newUser) => {
+  const { username, name, avatar_url } = newUser;
+  if (username && !username.match(/^[a-z0-9_-]{3,}$/g))
+    return Promise.reject({ status: 400, msg: "Username Invalid" });
+  const { rows } = await db.query(
+    "INSERT INTO users (username, name, avatar_url) VALUES ($1, $2, $3) RETURNING *",
+    [username, name, avatar_url]
+  );
+  return rows[0];
 };

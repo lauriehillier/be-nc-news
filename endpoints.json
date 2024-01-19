@@ -151,7 +151,7 @@
       "body": "this is a comment!"
     },
     "exampleResponse": {
-      "comments": [
+      "comment": [
         {
           "comment_id": 20,
           "body": "this is a comment!",
@@ -192,6 +192,24 @@
     "exampleRequest": {},
     "exampleResponse": {
       "users": [
+        {
+          "username": "rogersop",
+          "name": "paul",
+          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+        }
+      ]
+    }
+  },
+  "POST /api/users": {
+    "description": "adds a user to the database and serves the posted user",
+    "queries": [],
+    "exampleRequest": {
+      "username": "rogersop",
+      "name": "paul",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+    },
+    "exampleResponse": {
+      "user": [
         {
           "username": "rogersop",
           "name": "paul",

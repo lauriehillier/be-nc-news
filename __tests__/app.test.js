@@ -476,7 +476,7 @@ describe("/api/articles/:article_id", () => {
         .send({ another: "hello" })
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad Request");
+          expect(body.msg).toBe("Required Fields Missing");
         });
     });
   });
@@ -701,7 +701,7 @@ describe("/api/comments/:comment_id", () => {
         .send({ another: "hello" })
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad Request");
+          expect(body.msg).toBe("Required Fields Missing");
         });
     });
   });
@@ -721,6 +721,69 @@ describe("/api/users", () => {
             expect(typeof user.name).toBe("string");
             expect(typeof user.avatar_url).toBe("string");
           });
+        });
+    });
+  });
+  describe("POST", () => {
+    test("201: sends an object of the posted user", () => {
+      return request(app)
+        .post("/api/users/")
+        .send({
+          username: "new_user",
+          name: "johnny",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        })
+        .expect(201)
+        .then(({ body }) => {
+          const { user } = body;
+          expect(user).toMatchObject({
+            username: "new_user",
+            name: "johnny",
+            avatar_url:
+              "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+          });
+        });
+    });
+    test("409: sends an appropriate error if user already exists", () => {
+      return request(app)
+        .post("/api/users/")
+        .send({
+          username: "icellusedkars",
+          name: "johnny",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        })
+        .expect(409)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Resource Already Exists");
+        });
+    });
+    test("400: sends an appropriate error if any user or name are missing or empty", () => {
+      return request(app)
+        .post("/api/users/")
+        .send({
+          name: "johnny",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Required Fields Missing");
+        });
+    });
+    test("400: sends an appropriate error if the username is invalid (at least 3 characters, numbers, letters, dash and underscore only)", () => {
+      return request(app)
+      .post("/api/users/")
+      .send({
+        username: "new user",
+        name: "johnny",
+        avatar_url:
+          "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+      })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Username Invalid");
         });
     });
   });
