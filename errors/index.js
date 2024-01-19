@@ -3,6 +3,8 @@ exports.handleCustomErrors = (err, req, res, next) => {
   else next(err);
 };
 exports.handlePsqlErrors = (err, req, res, next) => {
+  if (err.code === "23505")
+    res.status(409).send({ msg: "Resource Already Exists" });
   if (err.code) res.status(400).send({ msg: "Bad Request" });
   else next(err);
 };
