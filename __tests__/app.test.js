@@ -45,6 +45,47 @@ describe("/api", () => {
           });
       });
     });
+    describe("POST", () => {
+      test("201: sends an object of the posted topic", () => {
+        return request(app)
+          .post("/api/topics/")
+          .send({
+            slug: "topic name here",
+            description: "description here",
+          })
+          .expect(201)
+          .then(({ body }) => {
+            const { topic } = body;
+            expect(topic).toMatchObject({
+              slug: "topic name here",
+              description: "description here",
+            });
+          });
+      });
+      test("409: sends an appropriate error if topic already exists", () => {
+        return request(app)
+        .post("/api/topics/")
+        .send({
+          slug: "paper",
+          description: "description here",
+        })
+          .expect(409)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Resource Already Exists");
+          });
+      });
+      test("400: sends an appropriate error if any slug is missing or empty", () => {
+        return request(app)
+          .post("/api/topics/")
+          .send({
+            description: "description here",
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request: Missing Slug");
+          });
+      });
+    });
   });
   describe("/articles", () => {
     describe("GET", () => {
