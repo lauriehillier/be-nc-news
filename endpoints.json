@@ -223,13 +223,26 @@
     "queries": [],
     "exampleRequest": {},
     "exampleResponse": {
-      "user": [
-        {
-          "username": "rogersop",
-          "name": "paul",
-          "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
-        }
-      ]
+      "user": {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    }
+  },
+  "PATCH /api/users/:username": {
+    "description": "updates a given username and serves an object of the updated article",
+    "queries": [],
+    "exampleRequest": {
+      "name": "not paul",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "rogersop",
+        "name": "not paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
     }
   }
 }

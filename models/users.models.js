@@ -24,3 +24,18 @@ exports.insertUser = async (newUser) => {
   );
   return rows[0];
 };
+
+exports.updateUserById = async (username, updateUserData) => {
+  const { name, avatar_url } = updateUserData;
+  const queryValues = [username, name];
+  let SqlQuery = "UPDATE users SET name = $2";
+  if (avatar_url) {
+    SqlQuery += ", avatar_url = $3";
+    queryValues.push(avatar_url);
+  }
+  SqlQuery += "WHERE username = $1 RETURNING *";
+  const { rows } = await db.query(SqlQuery, queryValues);
+  return !rows.length
+    ? Promise.reject({ status: 404, msg: "User not found" })
+    : rows[0];
+};
