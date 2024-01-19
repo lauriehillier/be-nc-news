@@ -1,15 +1,15 @@
 const app = require("../app");
 const {
-  selectSingleArticle,
   selectArticles,
-  updateSingleArticle,
   insertArticle,
   removeArticleById,
+  updateArticleById,
+  selectArticleById,
 } = require("../models/articles.models");
 
-exports.getSingleArticle = async (req, res, next) => {
+exports.getArticleById = async (req, res, next) => {
   try {
-    const article = await selectSingleArticle(req.params.article_id);
+    const article = await selectArticleById(req.params.article_id);
     res.status(200).send({ article });
   } catch (err) {
     next(err);
@@ -26,11 +26,11 @@ exports.getArticles = async (req, res, next) => {
   }
 };
 
-exports.patchSingleArticle = async (req, res, next) => {
+exports.patchArticleById = async (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id } = req.params;
   try {
-    const article = await updateSingleArticle(inc_votes, article_id);
+    const article = await updateArticleById(inc_votes, article_id);
     res.status(200).send({ article });
   } catch (err) {
     next(err);

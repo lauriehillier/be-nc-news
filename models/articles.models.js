@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { checkExists } = require("../utils/check-exists");
 
-exports.selectSingleArticle = async (article_id) => {
+exports.selectArticleById = async (article_id) => {
   const { rows } = await db.query(
     `SELECT articles.*, 
     COUNT(comment_id)::INT AS comment_count
@@ -61,7 +61,7 @@ exports.selectArticles = async (
   return rows;
 };
 
-exports.updateSingleArticle = async (inc_votes, article_id) => {
+exports.updateArticleById = async (inc_votes, article_id) => {
   const { rows } = await db.query(
     `UPDATE articles SET 
       votes = votes + $1 

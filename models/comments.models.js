@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const { checkExists } = require("../utils/check-exists");
 
-exports.selectCommentsByArticle = async (article_id, limit = 10, page = 1) => {
+exports.selectCommentsByArticleId = async (article_id, limit = 10, page = 1) => {
   await checkExists("articles", "article_id", article_id, "Article");
   const queryValues = [article_id, page * limit - limit, limit];
   let queryStr = `SELECT * FROM comments 
@@ -12,7 +12,7 @@ exports.selectCommentsByArticle = async (article_id, limit = 10, page = 1) => {
   return rows;
 };
 
-exports.insertCommentByArticle = async (article_id, newComment) => {
+exports.insertCommentByArticleId = async (article_id, newComment) => {
   const { username, body } = newComment;
   if (!body) return Promise.reject({ status: 400, msg: "Empty Comment" });
   await checkExists("articles", "article_id", article_id, "Article");

@@ -1,25 +1,25 @@
 const app = require("../app");
 const {
-  selectCommentsByArticle,
-  insertCommentByArticle,
   removeCommentById,
   updateCommentById,
+  insertCommentByArticleId,
+  selectCommentsByArticleId,
 } = require("../models/comments.models");
 
-exports.getCommentsByArticle = async (req, res, next) => {
+exports.getCommentsByArticleId = async (req, res, next) => {
   try {
     const { article_id } = req.params;
     const { limit, p } = req.query;
-    const comments = await selectCommentsByArticle(article_id, limit, p);
+    const comments = await selectCommentsByArticleId(article_id, limit, p);
     res.status(200).send({ comments });
   } catch (err) {
     next(err);
   }
 };
 
-exports.postCommentByArticle = async (req, res, next) => {
+exports.postCommentByArticleId = async (req, res, next) => {
   try {
-    const comment = await insertCommentByArticle(
+    const comment = await insertCommentByArticleId(
       req.params.article_id,
       req.body
     );
