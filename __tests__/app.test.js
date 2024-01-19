@@ -876,4 +876,22 @@ describe("/api/users/:username", () => {
         });
     });
   });
+  describe("DELETE", () => {
+    test("204: deletes the user and returns no content", () => {
+      return request(app)
+        .delete("/api/users/butter_bridge")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+    test("404: sends an appropriate error if username doesn't exist", () => {
+      return request(app)
+        .delete("/api/users/hello")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("User not found");
+        });
+    });
+  });
 });
