@@ -6,9 +6,11 @@ const {
   handleServerErrors,
 } = require("./errors");
 const apiRouter = require("./routes/api-router");
+const cors = require('cors');
 
 // app setup
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Endpoints

@@ -507,6 +507,9 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
+describe("/api/articles/:article_id/vote", () => {
+
+})
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {
