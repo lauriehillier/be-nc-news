@@ -6,7 +6,7 @@ exports.selectCommentsByArticleId = async (article_id, limit = 10, page = 1) => 
   const queryValues = [article_id, page * limit - limit, limit];
   let queryStr = `SELECT * FROM comments 
   WHERE article_id = $1 
-  ORDER BY created_at ASC
+  ORDER BY created_at DESC
   OFFSET $2 LIMIT $3`;
   const { rows } = await db.query(queryStr, queryValues);
   return rows;

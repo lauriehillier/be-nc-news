@@ -507,9 +507,7 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
-describe("/api/articles/:article_id/vote", () => {
-
-})
+describe("/api/articles/:article_id/vote", () => {});
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("200: sends an array of comments objects with the correct properties, sorted by date created in ascending order", () => {
@@ -520,7 +518,7 @@ describe("/api/articles/:article_id/comments", () => {
           const { comments } = body;
           expect(Array.isArray(comments)).toBe(true);
           expect(comments.length).not.toBe(0);
-          expect(comments).toBeSortedBy("created_at");
+          expect(comments).toBeSortedBy("created_at", { descending: true });
           comments.forEach((comment) => {
             expect(typeof comment.comment_id).toBe("number");
             expect(typeof comment.author).toBe("string");
@@ -868,11 +866,11 @@ describe("/api/users/:username", () => {
     });
     test("400: sends an appropriate error if name is missing", () => {
       return request(app)
-      .patch("/api/users/butter_bridge")
-      .send({
-        avatar_url:
-          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
-      })
+        .patch("/api/users/butter_bridge")
+        .send({
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        })
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Required Fields Missing");
