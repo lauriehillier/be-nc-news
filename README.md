@@ -1,5 +1,5 @@
 # Northcoders News API
-A social media platform and community where users can post, discuss, and vote on a wide variety of content across numerous topics.
+The API for a social media platform and community where users can post, discuss, and vote on a wide variety of content across numerous topics.
 * Hosted: https://lh-nc-news.onrender.com/api/
 ## Installation
 ```bash
